@@ -1,0 +1,58 @@
+
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container border rounded p-3">
+    <div class="row border border-black p-2">
+        <div class="col-lg-6 image-gallery">
+        <div class="product-grid" id="productGrid">
+                <div id="item-0" class="product-item " data-img="{{ product.image1.url }}"><img class="product_img img-fluid w-100 small_img" src="{{ product.image1.url }}" alt="{{ product.name }}"></div>
+                <div id="item-2" class="product-item " data-img="{{ product.image3.url }}"><img class="product_img img-fluid w-100 small_img" src="{{ product.image3.url }}" alt="{{ product.name }}"></div>
+                <div id="item-1" class="product-item " data-img="{{ product.image2.url }}"><img class="product_img img-fluid w-100 small_img" src="{{ product.image2.url }}" alt="{{ product.name }}"></div>
+                <div id="item-3" class="product-item " data-img="{{ product.image2.url }}"><img class="product_img img-fluid w-100 big_img" src="{{ product.image1.url }}" alt="{{ product.name }}"></div>
+            </div>
+            
+        </div>
+        <div class="col-lg-6 bg-white rounded p-2">
+            <div class="content ">
+                <h2>{{ product.name }} <br><br>
+
+                    <span>{{ product.category }}</span>
+                </h2>
+                <p>{{ product.description|linebreaks }}</p>
+                
+                <h3>Rs. {{ product.price }}</h3>
+
+                {% if product.stock <= 0 %}
+                    <p class="text-justify my_prod_text my_custom_a"><b>Out of stock</b></p>
+                {% else %}
+                    <p class="my_custom_a">
+                        <a class="btn btn-primary" href="">
+                            <b>Add to cart</b>
+                        </a>
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src='{% static "js/zoomsl.js" %}'></script>
+<script>
+    $(document).ready(function(){
+        $(".small_img").hover (function(){
+$(".big_img").attr('src',$(this).attr('src'))
+});
+    })
+    
+    $(document).ready(function () {
+$(".big_img").imagezoomsl({
+zoomrange: [3, 3]
+});
+    })
+</script>
+
+
+
+{% endblock content %}

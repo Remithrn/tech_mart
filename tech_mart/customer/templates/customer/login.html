@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card mt-3">
+        <div class="card-body">
+            <h2>Login </h2>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                  <label for="username" class="form-label">Username</label>
+                  <input type="text" class="form-control" id="username" name="username">
+                  
+                </div>
+                <div class="mb-3">
+                  <label for="exampleInputPassword1" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="exampleInputPassword1" name="password">
+                </div>
+                
+                  
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+              Or <br>
+              <a href="{% url 'customer:register' %}" class="btn btn-secondary m-2 mx-auto">Register Now</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}
