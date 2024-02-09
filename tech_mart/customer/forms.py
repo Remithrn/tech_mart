@@ -14,4 +14,5 @@ class CustomerRegistrationForm(UserCreationForm):
             "email",
             "phone_number",
             "username",
+            "is_verified",
         )

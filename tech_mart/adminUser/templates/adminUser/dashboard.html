@@ -19,6 +19,8 @@
                         <th>Username</th>
                         <th>is_active</th>
                         <th>Deactivate/Activate</th>
+                        <th>Verified</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -43,6 +45,7 @@
                                     </button>
                                 </form>
                             </td>
+                            <td>{{ user.is_verified }}</td>
                             
                         </tr>
                     {% endfor %}

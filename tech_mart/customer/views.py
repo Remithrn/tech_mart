@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.urls import reverse
 from .models import Customer
 from .forms import CustomerRegistrationForm
@@ -14,23 +14,17 @@ def registerView(request):
 
     if request.method == "POST":
         form = CustomerRegistrationForm(request.POST)
-
+             
         if form.is_valid():
             messages.success(request, "Registration successful!")
             otp = random.randint(1000, 9999)
-            message_handler = MessageHandler(request.POST['phone_number'], otp).send_otp_via_message()
-            request.session['registration_data'] = {
-                'first_name': form.cleaned_data['first_name'],
-                'last_name': form.cleaned_data['last_name'],
-                'address': form.cleaned_data['address'],
-                'email': form.cleaned_data['email'],
-                'phone_number': form.cleaned_data['phone_number'],
-                'username': form.cleaned_data['username'],
-                'password': form.cleaned_data['password1'],
-                'otp': otp,
-            }
-            red = redirect('customer:otp')
-            red.set_cookie("can_otp_enter", True, max_age=600)
+           
+            customer=form.save(commit=False)
+            customer.otp=otp
+            customer.save()
+            print(customer.id)
+            red=redirect('customer:otp',customer.id)
+            red.set_cookie("can_otp_enter",True,max_age=600)
             return red
 
         else:
@@ -39,54 +33,24 @@ def registerView(request):
 
     return render(request, 'customer/register.html', {"form": form})
 
-def verifyOtp(request):
-    registration_data = request.session.get('registration_data', {})
+def verifyOtp(request,id):
+    # customer = get_object_or_404(Customer, id=id)
+    if request.method=="POST":
+        profile=Customer.objects.get(id=id)     
+        if request.COOKIES.get('can_otp_enter')!=None:
+            if(profile.otp==request.POST['otp']):
+                profile.is_verified=True
+                profile.save()
+                red=redirect("shop:home")
+                red.set_cookie('verified',True)
+                return red
+            messages.error(request,"wrong OTP")
+            return render(request,"customer/verify_otp.html",{'id':id})
+        messages.error(request,"wrong OTP")
+        return render(request,"customer/verify_otp.html",{'id':id})        
+    return render(request,"customer/verify_otp.html",{'id':id})
 
-    if not registration_data:
-        return redirect('customer:register')
-
-    first_name = registration_data.get('first_name', '')
-    last_name = registration_data.get('last_name', '')
-    address = registration_data.get('address', '')
-    email = registration_data.get('email', '')
-    phone_number = registration_data.get('phone_number', '')
-    username = registration_data.get('username', '')
-    password = registration_data.get('password', '')
-    otp = registration_data.get('otp', '')
-
-    if request.method == "POST":
-        entered_otp = request.POST.get('otp')
-
-        if str(otp) == entered_otp:
-            if request.COOKIES.get('can_otp_enter') is None:
-                print("Time is up")
-                return redirect('customer:register')
-            else:
-                customer = Customer.objects.create(
-                    first_name=first_name,
-                    last_name=last_name,
-                    address=address,
-                    email=email,
-                    phone_number=phone_number,
-                    username=username
-                )
-                customer.set_password(password)
-                customer.save()
-
-                user = authenticate(request, username=username, password=password)
-                if user is not None:
-                    login(request, user)
-                    print("User created and logged in.")
-
-                del request.session['registration_data']
-                url = reverse('shop:home')
-                return redirect(url)
-
-        else:
-            print("Wrong OTP")
-            return redirect('customer:register')
-
-    return render(request, 'customer/verify_otp.html', {'otp': otp})
+    
 
 
 

@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-p1e7o3w0y!uhv196%!s%&mchi%gx851)wnbx&x2f#=8g%##q*1'
+SECRET_KEY = str(os.getenv('SECRET_KEY'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -139,8 +142,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'customer.Customer'
 #twilio 
 
-ACCOUNT_SID='AC889ae945d215477527bbf13becbcb89f'
-AUTH_TOKEN='87203ba686fbae4e1511dc92f2576279'
+ACCOUNT_SID=str(os.getenv('ACCOUNT_SID'))
+AUTH_TOKEN=str(os.getenv('AUTH_TOKEN'))
 COUNTRY_CODE='+91'
 
-TWILIO_PHONE_NUMBER='+12407432666'
+TWILIO_PHONE_NUMBER=str(os.getenv('TWILIO_PHONE_NUMBER'))
